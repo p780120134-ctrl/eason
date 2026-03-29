@@ -50,6 +50,7 @@ app.use('/api/erp',         require('./routes/erp'));
 app.use('/api/invoices',    require('./routes/invoices'));
 app.use('/api/onboarding',  require('./routes/onboarding'));
 app.use('/api/ai',          require('./routes/ai'));
+app.use('/api/complaints',  require('./routes/complaints'));
 
 // ── 靜態檔案（前端 build 產物）──
 // 生產模式：public/ 目錄（Docker 內）；開發模式：frontend/dist
@@ -76,9 +77,15 @@ app.use((err, req, res, next) => {
 
 // 僅在直接執行時啟動 server（require 時不啟動）
 if (require.main === module) {
+  const http = require('http');
+  const { initSocket } = require('./socket');
   const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => {
+  const server = http.createServer(app);
+  const io = initSocket(server);
+  app.set('io', io); // 讓路由可以用 req.app.get('io')
+  server.listen(PORT, () => {
     console.log(`[統包先生] 後端啟動 http://localhost:${PORT}`);
+    console.log(`[統包先生] WebSocket 就緒`);
   });
 }
 

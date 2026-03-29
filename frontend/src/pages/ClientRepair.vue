@@ -63,7 +63,19 @@ function contactCS(){alert("開啟客服對話")}
 function rateRepair(w){w.rated=true;w.score=5;alert("感謝評分！")}
 function onUpload(files){alert("已上傳 "+files.length+" 個檔案")}
 onMounted(async () => {
-  // TODO: load from complaints API
+  try {
+    const {data} = await api.get("/complaints");
+    workOrders.value = (data.data||[]).map(c=>({
+      id:c.id, wo_no:c.complaint_no, issue:c.issue, type:c.type||"保固內",
+      status:c.status, rated:!!c.rating, score:c.rating||0,
+      timeline:[
+        {title:"申請報修",done:true,sub:c.created_at?.slice(5,10)},
+        {title:"客服確認",done:c.status!=="待處理",sub:""},
+        {title:"安排派工",done:c.status==="處理中"||c.status==="已完成",sub:c.scheduled_date||""},
+        {title:"完工確認",done:c.status==="已完成",sub:c.completed_date?.slice(5,10)||""},
+      ]
+    }));
+  } catch(e){console.error(e)}
 })
 </script>
 <style scoped>

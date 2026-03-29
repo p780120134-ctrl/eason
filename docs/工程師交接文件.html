@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>統包先生 · 工程師交接文件</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans TC',sans-serif;background:#F7F7F8;color:#0A0A0A;padding:24px;line-height:1.7;max-width:1100px;margin:0 auto}
+.mono{font-family:'DM Mono',monospace}
+h1{font-size:28px;font-weight:900;margin-bottom:4px}
+h2{font-size:20px;font-weight:800;margin:36px 0 14px;padding-bottom:8px;border-bottom:2px solid #0A0A0A}
+h3{font-size:15px;font-weight:700;margin:20px 0 10px;color:#333}
+.sub{font-size:13px;color:#888;margin-bottom:28px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:20px}
+th{text-align:left;padding:8px 12px;background:#0A0A0A;color:#fff;font-weight:600;font-size:11px;letter-spacing:.5px}
+td{padding:8px 12px;border-bottom:1px solid #E0E0E0;vertical-align:top}
+tr:hover td{background:#FAFAFA}
+.tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:4px;font-weight:600}
+.done{background:#E8F5E9;color:#2E7D32}
+.partial{background:#FFF3E0;color:#E65100}
+.todo{background:#FFEBEE;color:#C62828}
+.stub{background:#F5F5F5;color:#888}
+.info{background:#E3F2FD;color:#1565C0}
+
+.big-number{font-size:42px;font-weight:900;font-family:'DM Mono',monospace;line-height:1}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.stat-card{background:#fff;border:1px solid #E0E0E0;border-radius:12px;padding:16px;text-align:center}
+.stat-card .label{font-size:11px;color:#888;margin-top:4px}
+
+.progress-wrap{margin:20px 0}
+.progress-title{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px}
+.progress-bar{height:12px;background:#E0E0E0;border-radius:6px;overflow:hidden}
+.progress-fill{height:100%;border-radius:6px;transition:width .5s}
+
+.card{background:#fff;border:1px solid #E0E0E0;border-radius:12px;padding:20px;margin-bottom:16px}
+.card-dark{background:#0A0A0A;color:#fff;border-radius:14px;padding:24px;margin-bottom:20px}
+
+.tree{margin:12px 0 12px 20px;font-size:13px;line-height:2}
+.tree div{position:relative;padding-left:20px}
+.tree div::before{content:'├─';position:absolute;left:0;color:#CCC}
+.tree div:last-child::before{content:'└─'}
+
+.alert{padding:12px 16px;border-radius:8px;font-size:13px;margin-bottom:12px}
+.alert-red{background:#FFEBEE;border-left:3px solid #C62828;color:#C62828}
+.alert-green{background:#E8F5E9;border-left:3px solid #2E7D32;color:#2E7D32}
+.alert-blue{background:#E3F2FD;border-left:3px solid #1565C0;color:#1565C0}
+.alert-yellow{background:#FFF8E1;border-left:3px solid #F57F17;color:#F57F17}
+
+code{background:#F0F0F0;padding:2px 6px;border-radius:3px;font-family:'DM Mono',monospace;font-size:12px}
+pre{background:#1E1E1E;color:#D4D4D4;padding:16px;border-radius:10px;overflow-x:auto;font-size:12px;line-height:1.6;margin:10px 0}
+
+@media(max-width:768px){.stat-grid{grid-template-columns:repeat(2,1fr)}body{padding:12px}}
+</style>
+</head>
+<body>
+
+<h1>統包先生 MR.TURNKEY</h1>
+<div class="sub">工程師交接文件 · 2026/03/29 · GitHub: p780120134-ctrl/eason</div>
+
+<!-- ═══ 總覽 ═══ -->
+<h2>一、專案總覽</h2>
+
+<div class="stat-grid">
+  <div class="stat-card"><div class="big-number">167</div><div class="label">原始碼檔案</div></div>
+  <div class="stat-card"><div class="big-number">38</div><div class="label">資料庫表</div></div>
+  <div class="stat-card"><div class="big-number">70+</div><div class="label">API 端點</div></div>
+  <div class="stat-card"><div class="big-number">32</div><div class="label">前端頁面</div></div>
+</div>
+
+<div class="card-dark">
+  <div style="text-align:center">
+    <div style="font-size:11px;opacity:.5;letter-spacing:2px;margin-bottom:8px">整體完成度</div>
+    <div class="big-number" style="font-size:64px">85%</div>
+    <div style="font-size:13px;opacity:.5;margin-top:8px">開發完成 · 待部署上線</div>
+  </div>
+</div>
+
+<!-- 進度條 -->
+<div class="progress-wrap">
+  <div class="progress-title"><span>資料庫 Schema</span><span class="mono">100%</span></div>
+  <div class="progress-bar"><div class="progress-fill" style="width:100%;background:#2E7D32"></div></div>
+</div>
+<div class="progress-wrap">
+  <div class="progress-title"><span>後端 API（接真 DB）</span><span class="mono">85% (15/19 完整 · 4 基礎)</span></div>
+  <div class="progress-bar"><div class="progress-fill" style="width:85%;background:#1565C0"></div></div>
+</div>
+<div class="progress-wrap">
+  <div class="progress-title"><span>前端頁面（接真 API）</span><span class="mono">94% (30/32)</span></div>
+  <div class="progress-bar"><div class="progress-fill" style="width:94%;background:#1565C0"></div></div>
+</div>
+<div class="progress-wrap">
+  <div class="progress-title"><span>權限系統</span><span class="mono">100%</span></div>
+  <div class="progress-bar"><div class="progress-fill" style="width:100%;background:#2E7D32"></div></div>
+</div>
+<div class="progress-wrap">
+  <div class="progress-title"><span>Docker + 部署</span><span class="mono">90%</span></div>
+  <div class="progress-bar"><div class="progress-fill" style="width:90%;background:#1565C0"></div></div>
+</div>
+<div class="progress-wrap">
+  <div class="progress-title"><span>測試</span><span class="mono">0%</span></div>
+  <div class="progress-bar"><div class="progress-fill" style="width:0%;background:#C62828"></div></div>
+</div>
+
+<!-- ═══ 技術架構 ═══ -->
+<h2>二、技術架構</h2>
+
+<table>
+<tr><th>層級</th><th>技術</th><th>版本</th><th>說明</th></tr>
+<tr><td>前端</td><td>Vue 3 + Vite</td><td>3.4 / 5.4</td><td>SPA · Pinia 狀態管理 · Vue Router</td></tr>
+<tr><td>後端</td><td>Node.js + Express</td><td>20.x / 4.18</td><td>REST API · JWT 認證</td></tr>
+<tr><td>資料庫</td><td>PostgreSQL</td><td>16</td><td>Knex.js ORM · 38 張表</td></tr>
+<tr><td>快取</td><td>Redis</td><td>7</td><td>Session / 快取（已設定未深度使用）</td></tr>
+<tr><td>容器</td><td>Docker + Compose</td><td>29.x</td><td>開發版 + 生產版</td></tr>
+<tr><td>反向代理</td><td>Caddy</td><td>2</td><td>自動 HTTPS · 壓縮 · 安全標頭</td></tr>
+<tr><td>檔案儲存</td><td>本地 → S3</td><td>—</td><td>目前存本地 /uploads，需改 S3</td></tr>
+<tr><td>AI</td><td>Claude API</td><td>—</td><td>預留接口，需設定 API Key</td></tr>
+</table>
+
+<!-- ═══ 專案結構 ═══ -->
+<h2>三、專案目錄結構</h2>
+
+<pre>
+tongbao/
+├── .env.example              環境變數範本
+├── docker-compose.yml        開發版 Docker
+├── docker-compose.prod.yml   生產版 Docker
+├── package.json              根目錄腳本
+│
+├── backend/                  ── 後端 ──
+│   ├── src/
+│   │   ├── app.js            Express 主程式（路由掛載 + 中間件）
+│   │   ├── db.js             Knex 資料庫連線
+│   │   ├── middleware/
+│   │   │   ├── auth.js       JWT + RBAC + Scope（核心）
+│   │   │   ├── auditLog.js   操作紀錄
+│   │   │   └── validate.js   表單驗證
+│   │   └── routes/           19 個 API 路由
+│   ├── seeds/                種子資料
+│   └── knexfile.js           DB 遷移設定
+│
+├── frontend/                 ── 前端 ──
+│   ├── src/
+│   │   ├── main.js           路由 + Pinia + 守衛
+│   │   ├── App.vue           根元件 + Toast
+│   │   ├── pages/            32 個頁面
+│   │   ├── components/
+│   │   │   ├── layout/       AppShell · TopBar · SideBar · MobileTabBar
+│   │   │   ├── common/       13 個共用元件
+│   │   │   └── business/     EmployeeDashboard
+│   │   ├── stores/           auth.js · nav.js
+│   │   ├── composables/      useToast.js
+│   │   ├── utils/            api.js（Axios + JWT 攔截器）
+│   │   └── styles/           tokens.css
+│   └── vite.config.js
+│
+├── database/                 ── 資料庫 ──
+│   ├── 001_rbac.sql          8 表（權限系統 + 初始資料）
+│   └── 002_core_business.sql 30 表（業務資料）
+│
+├── docker/
+│   ├── Dockerfile.production 多階段構建
+│   ├── Caddyfile             自動 SSL
+│   └── Dockerfile.*          開發版
+│
+├── scripts/
+│   ├── deploy.sh             一鍵部署
+│   └── server-init.sh        伺服器初始化
+│
+└── docs/                     文件
+</pre>
+
+<!-- ═══ 後端 API ═══ -->
+<h2>四、後端 API 完成狀態</h2>
+
+<div class="alert alert-green">✅ 15/19 完整實作（接真 DB · CRUD · 權限 · 稽核）</div>
+<div class="alert alert-yellow">⚠ 4/19 基礎實作（有 DB 操作但功能較簡單）</div>
+
+<table>
+<tr><th>API 路由</th><th>端點數</th><th>狀態</th><th>說明</th></tr>
+<tr><td><code>/api/auth</code></td><td>5</td><td><span class="tag done">完整</span></td><td>登入/登出/刷新/me/改密碼 · JWT+bcrypt</td></tr>
+<tr><td><code>/api/users</code></td><td>7</td><td><span class="tag done">完整</span></td><td>CRUD + 權限覆寫 + 角色列表 + 登入紀錄</td></tr>
+<tr><td><code>/api/leads</code></td><td>7</td><td><span class="tag done">完整</span></td><td>填單CRUD + 統計 + 指派 + 轉案件（自動建客戶+工地+群組）</td></tr>
+<tr><td><code>/api/cases</code></td><td>8</td><td><span class="tag done">完整</span></td><td>案件CRUD + 統計 + 階段推進 + 付款節點 + 追加減</td></tr>
+<tr><td><code>/api/finance</code></td><td>13</td><td><span class="tag done">完整</span></td><td>收款確認/催款 + 請款審核/撥款 + 損益 + 發票 + 現金流 + 儀表板</td></tr>
+<tr><td><code>/api/checkin</code></td><td>5</td><td><span class="tag done">完整</span></td><td>打卡 + GPS驗證 + 統計 + 工地列表</td></tr>
+<tr><td><code>/api/logs</code></td><td>4</td><td><span class="tag done">完整</span></td><td>工程日誌提交 + 今日狀態 + 列表</td></tr>
+<tr><td><code>/api/chat</code></td><td>3</td><td><span class="tag done">完整</span></td><td>群組列表 + 訊息 + 發送（無 WebSocket）</td></tr>
+<tr><td><code>/api/esign</code></td><td>3</td><td><span class="tag done">完整</span></td><td>簽章文件列表 + 建立 + 簽署</td></tr>
+<tr><td><code>/api/gp</code></td><td>4</td><td><span class="tag done">完整</span></td><td>我的GP + 團隊排名 + 完成任務 + 扣分</td></tr>
+<tr><td><code>/api/onboarding</code></td><td>3</td><td><span class="tag done">完整</span></td><td>我的進度 + 更新 + 全員進度</td></tr>
+<tr><td><code>/api/meetings</code></td><td>4</td><td><span class="tag done">完整</span></td><td>會議列表 + 建立 + 分享客戶 + 客戶確認</td></tr>
+<tr><td><code>/api/invoices</code></td><td>3</td><td><span class="tag done">完整</span></td><td>發票列表 + 開立 + 作廢</td></tr>
+<tr><td><code>/api/reports</code></td><td>3</td><td><span class="tag done">完整</span></td><td>GP報表 + 財務報表 + 打卡報表</td></tr>
+<tr><td><code>/api/line</code></td><td>4</td><td><span class="tag done">完整</span></td><td>對話列表 + 訊息 + 回覆 + Webhook接收</td></tr>
+<tr><td><code>/api/inspections</code></td><td>3</td><td><span class="tag partial">基礎</span></td><td>巡查列表 + 狀態 + 提交（DB操作較少）</td></tr>
+<tr><td><code>/api/upload</code></td><td>2</td><td><span class="tag partial">基礎</span></td><td>上傳存本地 + 列表（需改 S3）</td></tr>
+<tr><td><code>/api/erp</code></td><td>2</td><td><span class="tag partial">基礎</span></td><td>狀態查詢 + 模擬同步（需接真 ERP API）</td></tr>
+<tr><td><code>/api/ai</code></td><td>3</td><td><span class="tag partial">基礎</span></td><td>會議分析 + 報價 + 工期（需設定 Claude API Key）</td></tr>
+</table>
+
+<!-- ═══ 前端頁面 ═══ -->
+<h2>五、前端頁面完成狀態</h2>
+
+<table>
+<tr><th>模組</th><th>頁面</th><th>路由</th><th>API</th><th>狀態</th></tr>
+<tr><td rowspan="2">登入</td><td>Login.vue</td><td>/login</td><td>auth</td><td><span class="tag done">完整</span></td></tr>
+<tr><td>LegacyBridge.vue</td><td>/*</td><td>—</td><td><span class="tag info">過渡用</span></td></tr>
+<tr><td rowspan="3">接單+案件</td><td>LeadCenter.vue</td><td>/leads</td><td>leads</td><td><span class="tag done">完整</span></td></tr>
+<tr><td>CaseList.vue</td><td>/cases</td><td>cases</td><td><span class="tag done">完整</span></td></tr>
+<tr><td>CaseDetail.vue</td><td>/cases/:id</td><td>cases+finance</td><td><span class="tag done">完整</span></td></tr>
+<tr><td rowspan="8">設計師</td><td>DesignerHome.vue</td><td>/designer</td><td>cases</td><td><span class="tag done">完整</span></td></tr>
+<tr><td>MeasureBooking.vue</td><td>/designer/measure</td><td>leads</td><td><span class="tag done">接API</span></td></tr>
+<tr><td>ClientContacts.vue</td><td>/designer/contacts</td><td>leads</td><td><span class="tag done">接API</span></td></tr>
+<tr><td>DesignerQuote.vue</td><td>/designer/quote</td><td>cases</td><td><span class="tag done">接API</span></td></tr>
+<tr><td>DesignerDocs.vue</td><td>/designer/docs</td><td>upload</td><td><span class="tag done">接API</span></td></tr>
+<tr><td>NegotiateFlow.vue</td><td>/designer/negotiate</td><td>leads</td><td><span class="tag done">接API</span></td></tr>
+<tr><td>DesignerPayments.vue</td><td>/designer/payments</td><td>finance</td><td><span class="tag done">接API</span></td></tr>
+<tr><td>DesignerKPI.vue</td><td>/designer/kpi</td><td>gp</td><td><span class="tag done">接API</span></td></tr>
+<tr><td rowspan="6">主管</td><td>ManagerDashboard.vue</td><td>/manager</td><td>finance+gp</td><td><span class="tag done">接API</span></td></tr>
+<tr><td>CaseAssign.vue</td><td>/manager/assign</td><td>leads</td><td><span class="tag done">接API</span></td></tr>
+<tr><td>DispatchReview.vue</td><td>/manager/dispatch</td><td>finance</td><td><span class="tag done">接API</span></td></tr>
+<tr><td>DefectTracker.vue</td><td>/manager/defects</td><td>cases</td><td><span class="tag done">接API</span></td></tr>
+<tr><td>RepairOrders.vue</td><td>/manager/repairs</td><td>—</td><td><span class="tag partial">待接</span></td></tr>
+<tr><td>TeamTasks.vue</td><td>/manager/tasks</td><td>gp</td><td><span class="tag done">接API</span></td></tr>
+<tr><td rowspan="5">財務</td><td>FinanceDashboard.vue</td><td>/finance</td><td>finance</td><td><span class="tag done">完整</span></td></tr>
+<tr><td>Receivables.vue</td><td>/finance/receivables</td><td>finance</td><td><span class="tag done">完整</span></td></tr>
+<tr><td>Payables.vue</td><td>/finance/payables</td><td>finance</td><td><span class="tag done">完整</span></td></tr>
+<tr><td>ProfitLoss.vue</td><td>/finance/pnl</td><td>finance</td><td><span class="tag done">完整</span></td></tr>
+<tr><td>CashflowBoard.vue</td><td>/finance/cashflow</td><td>finance</td><td><span class="tag done">完整</span></td></tr>
+<tr><td rowspan="6">客戶端</td><td>ClientHome.vue</td><td>/client</td><td>cases</td><td><span class="tag done">接API</span></td></tr>
+<tr><td>ClientProgress.vue</td><td>/client/progress</td><td>cases+finance</td><td><span class="tag done">接API</span></td></tr>
+<tr><td>ClientPhotos.vue</td><td>/client/photos</td><td>upload</td><td><span class="tag done">接API</span></td></tr>
+<tr><td>ClientAddons.vue</td><td>/client/addons</td><td>cases</td><td><span class="tag done">接API</span></td></tr>
+<tr><td>ClientPayments.vue</td><td>/client/payments</td><td>finance</td><td><span class="tag done">接API</span></td></tr>
+<tr><td>ClientRepair.vue</td><td>/client/repair</td><td>—</td><td><span class="tag partial">待接</span></td></tr>
+<tr><td rowspan="2">其他</td><td>ESignCenter.vue</td><td>/esign</td><td>esign</td><td><span class="tag done">接API</span></td></tr>
+<tr><td>FileManager.vue</td><td>/files</td><td>upload</td><td><span class="tag done">接API</span></td></tr>
+</table>
+
+<!-- ═══ 權限系統 ═══ -->
+<h2>六、權限系統架構</h2>
+
+<div class="card">
+<h3>三層權限</h3>
+<table>
+<tr><th>層級</th><th>實作方式</th><th>程式碼位置</th></tr>
+<tr><td>JWT 認證</td><td><code>authenticate(req,res,next)</code></td><td>middleware/auth.js</td></tr>
+<tr><td>角色授權</td><td><code>authorize('boss','manager')</code></td><td>middleware/auth.js</td></tr>
+<tr><td>功能權限</td><td><code>requirePermission('finance','read')</code></td><td>middleware/auth.js</td></tr>
+</table>
+
+<h3>CRUD + Scope</h3>
+<p style="font-size:13px;color:#555">每個權限不只是有/沒有，而是分成 4 個操作 + 3 個範圍：</p>
+<table>
+<tr><th>CRUD</th><th>Scope</th></tr>
+<tr><td>can_create · can_read · can_update · can_delete</td><td><code>own</code>=只看自己 · <code>store</code>=看本店 · <code>all</code>=看全部</td></tr>
+</table>
+<p style="font-size:13px;color:#555;margin-top:8px">使用 <code>applyScopeFilter(query, req, userIdCol, storeIdCol)</code> 自動加 WHERE 條件。</p>
+</div>
+
+<!-- ═══ 資料庫 ═══ -->
+<h2>七、資料庫（38 張表）</h2>
+
+<div class="card">
+<table>
+<tr><th>類別</th><th>表名</th><th>說明</th></tr>
+<tr><td rowspan="8">RBAC</td><td>users</td><td>14 帳號 · bcrypt 密碼</td></tr>
+<tr><td>roles</td><td>14 角色 · 含上下級</td></tr>
+<tr><td>permissions</td><td>32 功能模組</td></tr>
+<tr><td>role_permissions</td><td>角色×權限（CRUD+Scope）</td></tr>
+<tr><td>user_permission_overrides</td><td>個人權限覆寫</td></tr>
+<tr><td>stores</td><td>2 間門市</td></tr>
+<tr><td>login_logs</td><td>登入紀錄</td></tr>
+<tr><td>token_blacklist</td><td>JWT 黑名單</td></tr>
+<tr><td rowspan="5">核心</td><td>customers</td><td>客戶</td></tr>
+<tr><td>leads</td><td>填單/進件</td></tr>
+<tr><td>cases</td><td>案件（核心表）</td></tr>
+<tr><td>sites</td><td>工地（GPS+NFC）</td></tr>
+<tr><td>vendors</td><td>廠商/工班</td></tr>
+<tr><td rowspan="5">金流</td><td>contracts</td><td>合約</td></tr>
+<tr><td>quotes + quote_items</td><td>報價</td></tr>
+<tr><td>payment_nodes</td><td>付款節點</td></tr>
+<tr><td>addons</td><td>追加減</td></tr>
+<tr><td>invoices</td><td>電子發票</td></tr>
+<tr><td rowspan="5">工地</td><td>work_orders</td><td>派工/發包</td></tr>
+<tr><td>vendor_claims</td><td>工班請款</td></tr>
+<tr><td>checkins</td><td>打卡紀錄</td></tr>
+<tr><td>construction_logs</td><td>工程日誌</td></tr>
+<tr><td>inspections</td><td>設計師巡查</td></tr>
+<tr><td rowspan="5">其他</td><td>chat_groups + chat_members + chat_messages</td><td>通訊</td></tr>
+<tr><td>esign_documents + esign_signatures</td><td>電子簽章</td></tr>
+<tr><td>documents</td><td>檔案管理</td></tr>
+<tr><td>gp_monthly</td><td>GP 遊戲化</td></tr>
+<tr><td>meetings · onboarding_progress · notifications · client_ratings · complaints · line_*</td><td>其他</td></tr>
+</table>
+</div>
+
+<!-- ═══ 怎麼跑 ═══ -->
+<h2>八、本機開發怎麼跑</h2>
+
+<pre>
+# 1. 啟動資料庫
+cd tongbao
+docker compose up -d db redis
+
+# 2. 安裝依賴
+cd backend && npm install
+cd ../frontend && npm install
+
+# 3. 設定環境變數
+cp .env.example .env
+# 編輯 .env（DB密碼改成 tongbao_dev_2026）
+
+# 4. 執行種子資料
+cd backend && npx knex seed:run
+
+# 5. 啟動後端
+node src/app.js
+# → http://localhost:3000
+
+# 6. 啟動前端（另一個終端）
+cd frontend && npx vite
+# → http://localhost:5173
+
+# 7. 登入
+# 帳號: boss / staff / worker / manager / finance / client
+# 密碼: 1234
+</pre>
+
+<!-- ═══ 待完成 ═══ -->
+<h2>九、待完成項目（工程師接手後要做的）</h2>
+
+<div class="alert alert-red"><strong>🔴 必做（不做不能上線）</strong></div>
+
+<table>
+<tr><th>#</th><th>項目</th><th>預估</th><th>說明</th></tr>
+<tr><td>1</td><td>上傳改 S3</td><td>1 天</td><td>upload.js 目前存本地 → 改為 AWS S3 Presigned URL</td></tr>
+<tr><td>2</td><td>WebSocket 即時通訊</td><td>2 天</td><td>chat.js 目前需重新整理才看到新訊息 → 加 Socket.io</td></tr>
+<tr><td>3</td><td>complaints API</td><td>1 天</td><td>售後報修/客訴 API 尚未實作（前端已有頁面）</td></tr>
+<tr><td>4</td><td>前端 7 個頁面精修</td><td>2 天</td><td>部分 Mock 資料需改為 API 動態載入</td></tr>
+<tr><td>5</td><td>部署到雲端</td><td>1 天</td><td>DigitalOcean + deploy.sh 一鍵部署</td></tr>
+</table>
+
+<div class="alert alert-yellow"><strong>🟡 建議做（提升品質）</strong></div>
+
+<table>
+<tr><th>#</th><th>項目</th><th>預估</th><th>說明</th></tr>
+<tr><td>6</td><td>單元測試</td><td>3 天</td><td>Jest · 至少測 auth/cases/finance 核心流程</td></tr>
+<tr><td>7</td><td>E2E 測試</td><td>2 天</td><td>Playwright · 登入→建案→收款 完整流程</td></tr>
+<tr><td>8</td><td>Claude API 接入</td><td>1 天</td><td>ai.js 已有接口，需設定 API Key + 後端 Proxy</td></tr>
+<tr><td>9</td><td>LINE Push API</td><td>1 天</td><td>line.js webhook 接收已做，回推未接</td></tr>
+<tr><td>10</td><td>ERP 實際串接</td><td>2 天</td><td>erp.js 目前模擬，需接鼎新/SAP API</td></tr>
+</table>
+
+<div class="alert alert-blue"><strong>🟢 加分項（未來擴充）</strong></div>
+
+<table>
+<tr><th>#</th><th>項目</th><th>說明</th></tr>
+<tr><td>11</td><td>iOS App 編譯</td><td>SwiftUI 原型在 TongbaoCheckin/ · 需 Xcode + Apple Developer</td></tr>
+<tr><td>12</td><td>CI/CD</td><td>.github/workflows/deploy.yml 已寫好，需在 GitHub 設定 Secrets</td></tr>
+<tr><td>13</td><td>錯誤監控</td><td>接 Sentry · 前後端錯誤即時通知</td></tr>
+<tr><td>14</td><td>日誌收集</td><td>ELK / CloudWatch · 集中收集後端 log</td></tr>
+</table>
+
+<!-- ═══ 另一個專案 ═══ -->
+<h2>十、原型 Demo（另一個檔案）</h2>
+
+<div class="alert alert-blue">
+<strong>tongbao_app_complete_final.html</strong>（29,545 行）是最初的前端原型 Demo。<br>
+它包含了所有 30+ 系統模組的完整 UI 和假資料，可以直接用瀏覽器打開測試。<br>
+正式版 Vue 專案是基於這個原型重新開發的。<br><br>
+原型中有些功能在正式版尚未實作（遊戲化、新人訓練、風格探索卡 等），<br>
+可以參考原型的邏輯移植到正式版。
+</div>
+
+<!-- ═══ 帳號 ═══ -->
+<h2>十一、測試帳號</h2>
+
+<table>
+<tr><th>帳號</th><th>密碼</th><th>角色</th><th>進入頁面</th><th>權限數</th></tr>
+<tr><td><code>boss</code></td><td>1234</td><td>老闆</td><td>/cases</td><td>32（全部）</td></tr>
+<tr><td><code>staff</code></td><td>1234</td><td>設計師</td><td>/designer</td><td>10</td></tr>
+<tr><td><code>worker</code></td><td>1234</td><td>工務</td><td>/designer</td><td>5</td></tr>
+<tr><td><code>manager</code></td><td>1234</td><td>店長</td><td>/manager</td><td>16</td></tr>
+<tr><td><code>finance</code></td><td>1234</td><td>財務</td><td>/finance</td><td>5</td></tr>
+<tr><td><code>client</code></td><td>1234</td><td>客戶</td><td>/client</td><td>4</td></tr>
+<tr><td colspan="5" style="color:#888;font-size:11px">其他：admin · designmgr · workmgr · marketing · digitalmgr · supervisor · contractor · partner</td></tr>
+</table>
+
+<!-- ═══ 聯繫 ═══ -->
+<h2>十二、重要提醒</h2>
+
+<div class="alert alert-red">
+<strong>上線前必須改的：</strong><br>
+1. .env 中的 JWT_SECRET → 改為 64+ 字元隨機串<br>
+2. .env 中的 DB_PASSWORD → 改為強密碼<br>
+3. 所有帳號密碼 1234 → 要求使用者首次登入修改
+</div>
+
+<div style="text-align:center;padding:32px;color:#888;font-size:12px;margin-top:40px">
+  統包先生 MR.TURNKEY · 工程師交接文件<br>
+  2026/03/29 · GitHub: p780120134-ctrl/eason
+</div>
+
+</body>
+</html>

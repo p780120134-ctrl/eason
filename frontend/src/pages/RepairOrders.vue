@@ -13,8 +13,8 @@
       </div>
       <div class="o-info"><span>類型：{{ o.type }}</span><span>緊急度：{{ o.urgency }}</span><span v-if="o.scheduled">排定：{{ o.scheduled }}</span></div>
       <div class="o-actions" v-if="o.status!=='已完成'">
-        <button class="btn btn-sm btn-primary" v-if="o.status==='待處理'" @click="o.status='處理中'">開始處理</button>
-        <button class="btn btn-sm btn-primary" v-if="o.status==='處理中'" @click="o.status='已完成'">完成結案</button>
+        <button class="btn btn-sm btn-primary" v-if="o.status==='待處理'" @click="api.put('/complaints/'+o.id,{status:'處理中'}).then(()=>o.status='處理中')">開始處理</button>
+        <button class="btn btn-sm btn-primary" v-if="o.status==='處理中'" @click="api.put('/complaints/'+o.id,{status:'已完成'}).then(()=>o.status='已完成')">完成結案</button>
         <button class="btn btn-sm" @click="assignRepair(o)">指派人員</button>
       </div>
     </div>
@@ -35,7 +35,15 @@ const orders = ref([
 ])
 function assignRepair(o){alert("指派維修人員："+o.wo_no)}
 onMounted(async () => {
-  // TODO: load from complaints API when implemented
+  try {
+    const {data} = await api.get("/complaints");
+    orders.value = (data.data||[]).map(c=>({
+      id:c.id, wo_no:c.complaint_no, client:c.client_name||"客戶",
+      case_name:c.case_name||"", issue:c.issue,
+      type:c.type||"保固內", urgency:c.urgency||"一般",
+      status:c.status, scheduled:c.scheduled_date,
+    }));
+  } catch(e){console.error(e)}
 })
 </script>
 <style scoped>
