@@ -1,0 +1,17 @@
+{
+  "name": "統包先生 MR.TURNKEY",
+  "short_name": "統包先生",
+  "description": "裝修品牌管理平台 · 工地打卡 · GP激勵 · 即時通訊",
+  "start_url": "./tongbao_app_complete_final.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0A0A0A",
+  "theme_color": "#0A0A0A",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png"}
+  ],
+  "categories": ["business", "productivity"],
+  "lang": "zh-TW",
+  "scope": "./"
+}

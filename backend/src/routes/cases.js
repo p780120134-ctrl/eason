@@ -134,8 +134,8 @@ router.post('/', authenticate, requirePermission('cases', 'create'), auditLog('�
 
     // 案件編號
     const year = new Date().getFullYear();
-    const lastCase = await db('cases').where('case_no', 'like', `TM-${year}-%`).orderBy('id', 'desc').first();
-    const seq = lastCase ? parseInt(lastCase.case_no.split('-')[2]) + 1 : 1;
+    const caseCount = await db('cases').count('id as n').first();
+    const seq = parseInt(caseCount.n) + 1;
     const case_no = `TM-${year}-${String(seq).padStart(3, '0')}`;
 
     const [newCase] = await db('cases').insert({

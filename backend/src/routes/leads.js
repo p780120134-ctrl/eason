@@ -6,8 +6,8 @@ const { auditLog } = require('../middleware/auditLog');
 // 產生填單編號
 async function nextLeadNo() {
   const year = new Date().getFullYear();
-  const last = await db('leads').where('lead_no', 'like', `L-${year}-%`).orderBy('id', 'desc').first();
-  const seq = last ? parseInt(last.lead_no.split('-')[2]) + 1 : 1;
+  const count = await db('leads').count('id as n').first();
+  const seq = parseInt(count.n) + 1;
   return `L-${year}-${String(seq).padStart(3, '0')}`;
 }
 
@@ -183,8 +183,8 @@ router.post('/:id/convert', authenticate, requirePermission('cases', 'create'), 
 
     // 產生案件編號
     const year = new Date().getFullYear();
-    const lastCase = await db('cases').where('case_no', 'like', `TM-${year}-%`).orderBy('id', 'desc').first();
-    const seq = lastCase ? parseInt(lastCase.case_no.split('-')[2]) + 1 : 1;
+    const caseCount = await db('cases').count('id as n').first();
+    const seq = parseInt(caseCount.n) + 1;
     const case_no = `TM-${year}-${String(seq).padStart(3, '0')}`;
 
     const {
