@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # ── PostgreSQL ──
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: tongbao
+      POSTGRES_USER: tongbao_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-tongbao_dev_2026}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/001_rbac.sql:/docker-entrypoint-initdb.d/01-rbac.sql
+      - ./database/002_core_business.sql:/docker-entrypoint-initdb.d/02-core.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tongbao_user -d tongbao"]
+      interval: 5s
+      retries: 5
+
+  # ── Redis ──
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+
+  # ── 後端 API ──
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../docker/Dockerfile.backend
+    ports:
+      - "3000:3000"
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./backend/src:/app/src
+    command: npm run dev
+
+  # ── 前端（開發模式）──
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../docker/Dockerfile.frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/src:/app/src
+    command: npm run dev -- --host
+
+volumes:
+  pgdata:
+  redisdata:

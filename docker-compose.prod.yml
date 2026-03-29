@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  # ── PostgreSQL ──
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${DB_NAME:-tongbao}
+      POSTGRES_USER: ${DB_USER:-tongbao_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/001_rbac.sql:/docker-entrypoint-initdb.d/01-rbac.sql
+      - ./database/002_core_business.sql:/docker-entrypoint-initdb.d/02-core.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-tongbao_user} -d ${DB_NAME:-tongbao}"]
+      interval: 10s
+      retries: 5
+    restart: always
+
+  # ── Redis ──
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redisdata:/data
+    restart: always
+
+  # ── App（前端+後端合體）──
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.production
+    ports:
+      - "3000:3000"
+    env_file: .env
+    environment:
+      - DB_HOST=db
+      - REDIS_HOST=redis
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - uploads:/app/uploads
+    restart: always
+
+  # ── Caddy（自動 SSL 反向代理）──
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+    restart: always
+
+volumes:
+  pgdata:
+  redisdata:
+  uploads:
+  caddy_data:
+  caddy_config:

@@ -1,0 +1,22 @@
+{
+  "name": "tongbao-platform",
+  "version": "1.0.0",
+  "description": "統包先生 MR.TURNKEY 裝修品牌管理平台",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "start": "cd backend && npm start",
+    "db:migrate": "cd backend && npx knex migrate:latest",
+    "db:seed": "cd backend && npx knex seed:run",
+    "db:reset": "cd backend && npx knex migrate:rollback --all && npx knex migrate:latest && npx knex seed:run",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "test": "cd backend && npm test"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}

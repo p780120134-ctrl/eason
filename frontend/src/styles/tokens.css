@@ -1,0 +1,38 @@
+/* ══════════════════════════════════════
+   統包先生 Design Tokens
+   黑白灰高級感 · 全域變數
+══════════════════════════════════════ */
+:root {
+  --black: #0A0A0A;
+  --white: #FFFFFF;
+  --bg: #F7F7F8;
+  --bg2: #FFFFFF;
+  --bg3: #EFEFEF;
+  --bg4: #E2E2E2;
+  --border: #E0E0E0;
+  --border2: #CCCCCC;
+  --text: #0A0A0A;
+  --text2: #555555;
+  --text3: #888888;
+  --green: #3A9668;
+  --red: #D45050;
+  --blue: #4A82B0;
+  --orange: #B87040;
+  --purple: #7060A0;
+  --font-sans: 'Noto Sans TC', 'Inter', sans-serif;
+  --font-mono: 'DM Mono', 'Courier New', monospace;
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --shadow: 0 1px 4px rgba(0,0,0,.06);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,.12);
+  --safe-top: env(safe-area-inset-top);
+  --safe-bottom: env(safe-area-inset-bottom);
+  --topbar-h: 52px;
+  --sidebar-w: 200px;
+  --tabbar-h: 56px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); font-size: 14px; line-height: 1.6; background: var(--bg); color: var(--text); }
+.mono { font-family: var(--font-mono); }

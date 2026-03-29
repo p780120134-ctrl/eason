@@ -1,0 +1,46 @@
+# ══════════════════════════════════════
+# 統包先生 生產版 Dockerfile（多階段構建）
+# Stage 1: 前端 build
+# Stage 2: 後端 + 靜態檔
+# ══════════════════════════════════════
+
+# ── Stage 1: Build Frontend ──
+FROM node:20-alpine AS frontend-build
+WORKDIR /app/frontend
+COPY frontend/package*.json ./
+RUN npm ci
+COPY frontend/ ./
+RUN npm run build
+
+# ── Stage 2: Production Server ──
+FROM node:20-alpine
+WORKDIR /app
+
+# 安裝後端依賴
+COPY backend/package*.json ./
+RUN npm ci --omit=dev
+
+# 複製後端程式碼
+COPY backend/src ./src
+COPY backend/config ./config
+COPY backend/knexfile.js ./
+COPY backend/seeds ./seeds
+COPY backend/migrations ./migrations
+
+# 複製前端 build 產物
+COPY --from=frontend-build /app/frontend/dist ./public
+
+# 建立上傳目錄
+RUN mkdir -p uploads
+
+# 環境變數
+ENV NODE_ENV=production
+ENV PORT=3000
+
+EXPOSE 3000
+
+# 健康檢查
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+  CMD wget -q --spider http://localhost:3000/api/health || exit 1
+
+CMD ["node", "src/app.js"]

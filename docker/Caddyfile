@@ -1,0 +1,38 @@
+# ══════════════════════════════════════
+# 統包先生 Caddy 設定
+# 自動 HTTPS · 反向代理 · 壓縮
+# ══════════════════════════════════════
+
+# 改成你的網域
+{$DOMAIN:localhost} {
+	# 壓縮
+	encode gzip
+
+	# API 反向代理
+	handle /api/* {
+		reverse_proxy app:3000
+	}
+
+	# 上傳檔案
+	handle /uploads/* {
+		reverse_proxy app:3000
+	}
+
+	# 前端靜態檔（SPA fallback）
+	handle {
+		reverse_proxy app:3000
+	}
+
+	# 安全標頭
+	header {
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy strict-origin-when-cross-origin
+		-Server
+	}
+
+	# Log
+	log {
+		output file /var/log/caddy/access.log
+	}
+}
